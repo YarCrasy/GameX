@@ -1,5 +1,6 @@
 package com.yarcrasy.gamex;
 
+import com.yarcrasy.gamex.Models.Client;
 import com.yarcrasy.gamex.Models.Game;
 
 import java.io.BufferedReader;
@@ -54,26 +55,55 @@ public class DBConnector {
         conn = DriverManager.getConnection(urlBase + database, user, password);
 
         File file = new File("src/main/resources/com/yarcrasy/gamex/GameX.sql");
-        StringBuilder sqlBuilder = new StringBuilder();
+        StringBuilder sb = new StringBuilder();
+        String delimiter = ";";
+
         try (FileReader fr = new FileReader(file);
              BufferedReader br = new BufferedReader(fr)) {
             String line;
             while ((line = br.readLine()) != null) {
-                sqlBuilder.append(line).append("\n");
+                String trimmed = line.trim();
+                if (trimmed.isEmpty() || trimmed.startsWith("--") || trimmed.startsWith("#")) {
+                    continue;
+                }
+                if (trimmed.toUpperCase().startsWith("DELIMITER")) {
+                    // Cambiar delimitador (ej: DELIMITER //)
+                    String[] parts = trimmed.split("\\s+", 2);
+                    delimiter = parts.length > 1 ? parts[1] : ";";
+                    continue;
+                }
+                sb.append(line).append("\n");
+                String accumulated = sb.toString().trim();
+                if (accumulated.endsWith(delimiter)) {
+                    // quitar el delimitador final
+                    String statement = accumulated.substring(0, accumulated.length() - delimiter.length()).trim();
+                    if (!statement.isEmpty()) {
+                        conn.createStatement().execute(statement);
+                    }
+                    sb.setLength(0);
+                }
+            }
+            // ejecutar restante si lo hay
+            String leftover = sb.toString().trim();
+            if (!leftover.isEmpty()) {
+                conn.createStatement().execute(leftover);
             }
         }
-
-        String[] statements = sqlBuilder.toString().split(";");
-        for (String statement : statements) {
-            if (!statement.trim().isEmpty()) {
-                conn.createStatement().execute(statement.trim());
-            }
-        }
-
     }
 
     ResultSet exec(String sql) throws Exception {
         return conn.createStatement().executeQuery(sql);
+    }
+
+    Game setupGameFromResultSet(ResultSet rs) throws SQLException {
+        Game game = new Game(
+                rs.getString("idJuego"),
+                rs.getString("titulo"),
+                rs.getString("plataforma"),
+                rs.getString("genero"),
+                rs.getInt("stock")
+        );
+        return game;
     }
 
     public List<Game> getAllGames() {
@@ -81,13 +111,7 @@ public class DBConnector {
         try {
             ResultSet rs = exec("CALL GetGames();");
             while (rs.next()) {
-                Game game = new Game();
-                game.id = rs.getString("idJuego");
-                game.title = rs.getString("titulo");
-                game.platform = rs.getString("plataforma");
-                game.genre = rs.getString("genero");
-                game.stock = rs.getInt("stock");
-                games.add(game);
+                games.add(setupGameFromResultSet(rs));
             }
             return games;
         } catch (Exception e) {
@@ -101,13 +125,7 @@ public class DBConnector {
         try {
             ResultSet rs = exec("CALL GetGamesByTitle('" + title + "');");
             while (rs.next()) {
-                Game game = new Game();
-                game.id = rs.getString("idJuego");
-                game.title = rs.getString("titulo");
-                game.platform = rs.getString("plataforma");
-                game.genre = rs.getString("genero");
-                game.stock = rs.getInt("stock");
-                games.add(game);
+                games.add(setupGameFromResultSet(rs));
             }
             return games;
         } catch (Exception e) {
@@ -116,5 +134,31 @@ public class DBConnector {
         return games;
     }
 
-}
+    Client setupClientFromResultSet(ResultSet rs) throws SQLException {
+        Client client = new Client(
+                rs.getString("idCliente"),
+                rs.getString("dni"),
+                rs.getString("nombreCompleto"),
+                rs.getString("email"),
+                rs.getString("direccion"),
+                rs.getBoolean("esFrecuente")
 
+        );
+        return client;
+    }
+
+    public List<Client> getClientsByName(String name) {
+        List<Client> clients = new ArrayList<>();
+        try {
+            ResultSet rs = exec("CALL GetClientsByName('" + name + "');");
+            while (rs.next()) {
+                clients.add(setupClientFromResultSet(rs));
+            }
+            return clients;
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return clients;
+    }
+
+}

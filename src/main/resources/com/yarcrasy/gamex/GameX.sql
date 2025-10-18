@@ -82,5 +82,13 @@ END //
 CREATE PROCEDURE GetGamesByTitle(IN gameTitle VARCHAR(150))
 BEGIN
     SELECT * FROM Juego
-    WHERE UPPER(titulo) LIKE CONCAT('%', UPPER(gameTitle), '%');
+    WHERE UPPER(titulo) LIKE UPPER(CONCAT('%', gameTitle, '%'));
+END //
+
+CREATE PROCEDURE CreateRental(IN p_idCliente INT, IN p_fechaAlquiler DATE, OUT p_idAlquiler INT)
+BEGIN
+    INSERT INTO Alquiler (idCliente, fechaAlquiler)
+    VALUES (p_idCliente, p_fechaAlquiler);
+
+    SET p_idAlquiler = LAST_INSERT_ID();
 END //

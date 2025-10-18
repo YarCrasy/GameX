@@ -58,6 +58,10 @@
                     <Font name="System Bold" size="18.0" />
                 </font>
             </Label>
+            <HBox>
+                <Label text="Cliente:"/>
+                <TextField promptText="Buscar cliente" HBox.hgrow="ALWAYS" fx:id="clientField"/>
+            </HBox>
             <ScrollPane VBox.vgrow="ALWAYS" fx:id="addedGameList" fitToWidth="true" hbarPolicy="NEVER">
                 <VBox/>
             </ScrollPane>
