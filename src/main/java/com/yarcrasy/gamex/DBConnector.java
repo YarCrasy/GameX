@@ -96,14 +96,13 @@ public class DBConnector {
     }
 
     Game setupGameFromResultSet(ResultSet rs) throws SQLException {
-        Game game = new Game(
+        return new Game(
                 rs.getString("idJuego"),
                 rs.getString("titulo"),
                 rs.getString("plataforma"),
                 rs.getString("genero"),
                 rs.getInt("stock")
         );
-        return game;
     }
 
     public List<Game> getAllGames() {
@@ -135,7 +134,7 @@ public class DBConnector {
     }
 
     Client setupClientFromResultSet(ResultSet rs) throws SQLException {
-        Client client = new Client(
+        return new Client(
                 rs.getString("idCliente"),
                 rs.getString("dni"),
                 rs.getString("nombreCompleto"),
@@ -144,7 +143,6 @@ public class DBConnector {
                 rs.getBoolean("esFrecuente")
 
         );
-        return client;
     }
 
     public List<Client> getClientsByName(String name) {
