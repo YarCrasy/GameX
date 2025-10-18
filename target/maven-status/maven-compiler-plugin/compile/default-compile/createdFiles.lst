@@ -1,0 +1,4 @@
+module-info.class
+com\yarcrasy\gamex\HelloApplication.class
+com\yarcrasy\gamex\HelloController.class
+com\yarcrasy\gamex\Launcher.class

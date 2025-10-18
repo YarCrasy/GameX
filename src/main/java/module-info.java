@@ -1,0 +1,11 @@
+module com.yarcrasy.gamex {
+    requires javafx.controls;
+    requires javafx.fxml;
+    requires javafx.graphics;
+    requires java.sql;
+    requires mysql.connector.j;
+    requires javafx.base;
+
+    opens com.yarcrasy.gamex to javafx.fxml;
+    exports com.yarcrasy.gamex;
+}
