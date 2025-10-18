@@ -11,5 +11,5 @@
     <Region HBox.hgrow="ALWAYS" minWidth="0.0"/>
     <Label text="Stock" fx:id="stock"/>
     <Region HBox.hgrow="ALWAYS" minWidth="0.0"/>
-    <Button mnemonicParsing="false" text="+"/>
+    <Button mnemonicParsing="false" text="+" onAction="#onAddButtonClicked"/>
 </HBox>

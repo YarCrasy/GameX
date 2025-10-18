@@ -79,16 +79,8 @@ BEGIN
     SELECT * FROM Juego;
 END //
 
-CREATE PROCEDURE GetGamesByName(IN gameTitle VARCHAR(150))
+CREATE PROCEDURE GetGamesByTitle(IN gameTitle VARCHAR(150))
 BEGIN
     SELECT * FROM Juego
-    WHERE titulo LIKE CONCAT('%', gameTitle, '%');
+    WHERE UPPER(titulo) LIKE CONCAT('%', UPPER(gameTitle), '%');
 END //
-
-CREATE PROCEDURE AddNewGame(
-    IN gameTitle VARCHAR(150),
-    IN gamePlatform VARCHAR(50),
-    IN rentalPrice DECIMAL(7,2),
-    IN gameGenre VARCHAR(50),
-    IN gameStock INT
-)

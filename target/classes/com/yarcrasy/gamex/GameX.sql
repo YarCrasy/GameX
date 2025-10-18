@@ -79,8 +79,8 @@ BEGIN
     SELECT * FROM Juego;
 END //
 
-CREATE PROCEDURE GetGamesByName(IN gameTitle VARCHAR(150))
+CREATE PROCEDURE GetGamesByTitle(IN gameTitle VARCHAR(150))
 BEGIN
     SELECT * FROM Juego
-    WHERE titulo LIKE CONCAT('%', gameTitle, '%');
+    WHERE UPPER(titulo) LIKE CONCAT('%', UPPER(gameTitle), '%');
 END //

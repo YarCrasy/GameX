@@ -96,5 +96,25 @@ public class DBConnector {
         return games;
     }
 
+    public List<Game> getGamesByTitle(String title) {
+        List<Game> games = new ArrayList<>();
+        try {
+            ResultSet rs = exec("CALL GetGamesByTitle('" + title + "');");
+            while (rs.next()) {
+                Game game = new Game();
+                game.id = rs.getString("idJuego");
+                game.title = rs.getString("titulo");
+                game.platform = rs.getString("plataforma");
+                game.genre = rs.getString("genero");
+                game.stock = rs.getInt("stock");
+                games.add(game);
+            }
+            return games;
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return games;
+    }
+
 }
 

@@ -8,4 +8,6 @@ module com.yarcrasy.gamex {
 
     opens com.yarcrasy.gamex to javafx.fxml;
     exports com.yarcrasy.gamex;
+    exports com.yarcrasy.gamex.controllers;
+    opens com.yarcrasy.gamex.controllers to javafx.fxml;
 }

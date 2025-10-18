@@ -1,6 +1,7 @@
 package com.yarcrasy.gamex;
 
 import com.yarcrasy.gamex.Models.Game;
+import com.yarcrasy.gamex.controllers.GameCardController;
 import javafx.application.Application;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -8,6 +9,8 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
@@ -19,7 +22,10 @@ public class MainView extends Application {
 
     @FXML
     private ScrollPane gameList;
-
+    @FXML
+    private TextField titleField;
+    @FXML
+    public ScrollPane cartList;
 
     public static void main(String[] args) {
         launch(args);
@@ -38,13 +44,12 @@ public class MainView extends Application {
         controller.loadGames();
     }
 
-    public void loadGames() {
-        List<Game> gl = DBConnector.instance.getAllGames();
+    void updateGameList(List<Game> gl) {
         VBox content = new VBox();
         content.spacingProperty().setValue(1);
 
         for (Game g : gl) {
-            GameCardController gcc = new GameCardController();
+            GameCardController gcc = new GameCardController(this, g);
             try {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("GameCard.fxml"));
                 fxmlLoader.setController(gcc);
@@ -58,9 +63,19 @@ public class MainView extends Application {
         gameList.setContent(content);
     }
 
+    public void loadGames() {
+        List<Game> gl = DBConnector.instance.getAllGames();
+        updateGameList(gl);
+    }
+
     @FXML
     public void onGameSearchBtnClick(ActionEvent e) {
-        System.out.println("Game Search Button Clicked");
+        List<Game> gl = DBConnector.instance.getGamesByTitle(titleField.getText());
+        updateGameList(gl);
+    }
+
+    public void addGameToCart(Game g) {
+
     }
 
 }
