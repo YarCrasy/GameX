@@ -1,6 +1,7 @@
 package com.yarcrasy.gamex;
 
 import com.yarcrasy.gamex.Models.Game;
+import com.yarcrasy.gamex.controllers.CartCardController;
 import com.yarcrasy.gamex.controllers.GameCardController;
 import javafx.application.Application;
 import javafx.fxml.FXML;
@@ -25,7 +26,7 @@ public class MainView extends Application {
     @FXML
     private TextField titleField;
     @FXML
-    public ScrollPane cartList;
+    public ScrollPane addedGameList;
 
     public static void main(String[] args) {
         launch(args);
@@ -54,7 +55,7 @@ public class MainView extends Application {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("GameCard.fxml"));
                 fxmlLoader.setController(gcc);
                 Node gameCard = fxmlLoader.load();
-                gcc.setGame(g);
+                gcc.setGameCard(g);
                 content.getChildren().add(gameCard);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -75,7 +76,33 @@ public class MainView extends Application {
     }
 
     public void addGameToCart(Game g) {
+        VBox content;
+        Node existing = addedGameList.getContent();
 
+        if (existing == null) {
+            content = new VBox();
+        } else if (existing instanceof HBox) {
+            content = (VBox) existing;
+        } else if (existing instanceof javafx.scene.layout.Pane) {
+            javafx.scene.layout.Pane pane = (javafx.scene.layout.Pane) existing;
+            content = new VBox();
+            content.getChildren().addAll(pane.getChildren());
+        } else {
+            content = new VBox();
+        }
+
+        addedGameList.setContent(content);
+        content.setSpacing(1);
+        CartCardController ccc = new CartCardController(this, g);
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("CartCard.fxml"));
+            fxmlLoader.setController(ccc);
+            Node gameCard = fxmlLoader.load();
+            ccc.setCartCard(g);
+            content.getChildren().add(gameCard);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

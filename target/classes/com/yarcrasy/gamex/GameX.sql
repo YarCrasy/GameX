@@ -23,7 +23,6 @@ CREATE TABLE Alquiler (
     idAlquiler INT AUTO_INCREMENT,
     idCliente INT NOT NULL,
     fechaAlquiler DATE NOT NULL,
-    hayRetraso BOOLEAN DEFAULT FALSE,
     multaRetraso DECIMAL(7,2) DEFAULT 0.00,
     CONSTRAINT PK_Alquiler PRIMARY KEY (idAlquiler),
     CONSTRAINT FK_Alquiler_Cliente FOREIGN KEY (idCliente)
@@ -37,6 +36,7 @@ CREATE TABLE Alquilado (
     cantidad INT DEFAULT 1,
     precio DECIMAL(7,2),
     fechaDevolucion DATE,
+    hayRetraso BOOLEAN DEFAULT FALSE,
 
     CONSTRAINT PK_Alquilado PRIMARY KEY (idAlquilado),
     CONSTRAINT FK_Alquilado_Alquiler FOREIGN KEY (idAlquiler)
@@ -82,5 +82,29 @@ END //
 CREATE PROCEDURE GetGamesByTitle(IN gameTitle VARCHAR(150))
 BEGIN
     SELECT * FROM Juego
-    WHERE UPPER(titulo) LIKE CONCAT('%', UPPER(gameTitle), '%');
+    WHERE UPPER(titulo) LIKE UPPER(CONCAT('%', gameTitle, '%'));
+END //
+
+CREATE PROCEDURE CreateRental(IN p_idCliente INT, IN p_fechaAlquiler DATE, OUT p_idAlquiler INT)
+BEGIN
+    INSERT INTO Alquiler (idCliente, fechaAlquiler)
+    VALUES (p_idCliente, p_fechaAlquiler);
+
+    SET p_idAlquiler = LAST_INSERT_ID();
+END //
+
+CREATE PROCEDURE AddRentedGame(IN p_idAlquiler INT, IN p_idJuego INT, IN p_cantidad INT, OUT p_precio DECIMAL(7,2))
+BEGIN
+    DECLARE gamePrice DECIMAL(7,2);
+    SELECT precioAlquiler INTO gamePrice FROM Juego WHERE idJuego = p_idJuego;
+    SET p_precio = gamePrice * p_cantidad;
+    INSERT INTO Alquilado (idAlquiler, idJuego, cantidad, precio)
+    VALUES (p_idAlquiler, p_idJuego, p_cantidad, p_precio);
+END //
+
+CREATE PROCEDURE SetRentedGameDelayed(IN p_idAlquiler INT, IN p_idJuego INT)
+BEGIN
+    UPDATE Alquilado a
+    SET a.hayRetraso = TRUE, a.precio = a.precio + 2.00
+    WHERE idAlquiler = p_idAlquiler AND idJuego = p_idJuego AND a.hayRetraso = FALSE;
 END //

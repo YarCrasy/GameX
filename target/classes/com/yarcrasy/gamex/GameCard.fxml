@@ -10,6 +10,6 @@
     <Label text="Título" fx:id="title"/>
     <Region HBox.hgrow="ALWAYS" minWidth="0.0"/>
     <Label text="Stock" fx:id="stock"/>
-    <Region HBox.hgrow="ALWAYS" minWidth="0.0"/>
+    <Region HBox.hgrow="ALWAYS" maxWidth="10.0"/>
     <Button mnemonicParsing="false" text="+" onAction="#onAddButtonClicked"/>
 </HBox>

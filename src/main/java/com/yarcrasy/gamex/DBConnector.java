@@ -159,4 +159,12 @@ public class DBConnector {
         return clients;
     }
 
+    public void setRentedGameDelayed(int rentalId, int rentedGameId) {
+        try {
+            exec("CALL SetRentedGameDelayed(" + rentalId + ", " + rentedGameId + ");");
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+
 }
