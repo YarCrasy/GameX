@@ -108,3 +108,10 @@ BEGIN
     SET a.hayRetraso = TRUE, a.precio = a.precio + 2.00
     WHERE idAlquiler = p_idAlquiler AND idJuego = p_idJuego AND a.hayRetraso = FALSE;
 END //
+
+CREATE PROCEDURE GetClientByNameOrDNI(IN searchTerm VARCHAR(100))
+BEGIN
+    SELECT * FROM Cliente
+    WHERE UPPER(nombreCompleto) LIKE UPPER(CONCAT('%', searchTerm, '%'))
+       OR UPPER(dni) LIKE UPPER(CONCAT('%', searchTerm, '%'));
+END //

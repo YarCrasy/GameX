@@ -6,10 +6,7 @@ import com.yarcrasy.gamex.Models.Game;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -165,6 +162,19 @@ public class DBConnector {
         } catch (Exception e) {
             System.out.println(e);
         }
+    }
+
+    public List<Client> getClientsByNameOrDni(String query) {
+        List<Client> clients = getClientsByName(query);
+        try {
+            ResultSet rs = exec("CALL GetClientByNameOrDni('" + query + "');");
+            while (rs.next()) {
+                clients.add(setupClientFromResultSet(rs));
+            }
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return clients;
     }
 
 }
