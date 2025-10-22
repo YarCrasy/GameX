@@ -156,6 +156,23 @@ public class DBConnector {
         return clients;
     }
 
+    public List<Client> getClientsByNameOrDni(String term) {
+        List<Client> clients = new ArrayList<>();
+        if (term == null) return clients;
+        try (PreparedStatement ps = conn.prepareStatement("CALL GetClientByNameOrDNI(?)")) {
+            ps.setString(1, term);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    clients.add(setupClientFromResultSet(rs));
+                }
+            }
+            return clients;
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return clients;
+    }
+
     public void setRentedGameDelayed(int rentalId, int rentedGameId) {
         try {
             exec("CALL SetRentedGameDelayed(" + rentalId + ", " + rentedGameId + ");");
@@ -163,18 +180,4 @@ public class DBConnector {
             System.out.println(e);
         }
     }
-
-    public List<Client> getClientsByNameOrDni(String query) {
-        List<Client> clients = getClientsByName(query);
-        try {
-            ResultSet rs = exec("CALL GetClientByNameOrDni('" + query + "');");
-            while (rs.next()) {
-                clients.add(setupClientFromResultSet(rs));
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-        return clients;
-    }
-
 }

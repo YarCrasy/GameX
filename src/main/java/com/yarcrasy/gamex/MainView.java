@@ -1,26 +1,18 @@
 package com.yarcrasy.gamex;
 
-import com.yarcrasy.gamex.Models.Client;
-import com.yarcrasy.gamex.Models.Game;
-import com.yarcrasy.gamex.controllers.CartCardController;
-import com.yarcrasy.gamex.controllers.GameCardController;
-import javafx.animation.PauseTransition;
+import com.yarcrasy.gamex.Models.*;
+import com.yarcrasy.gamex.controllers.*;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
-import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.List;
@@ -34,7 +26,7 @@ public class MainView extends Application {
     @FXML
     public ScrollPane addedGameList;
 
-    // Nuevo: campos para búsqueda/autocompletado de clientes y detalle
+    // Campos para búsqueda/autocompletado de clientes y detalle
     @FXML
     private TextField clientField;
     @FXML
@@ -49,9 +41,6 @@ public class MainView extends Application {
     private Label clientEmailLabel;
     @FXML
     private CheckBox clientFrequentCheckBox;
-
-    private ContextMenu clientSuggestions = new ContextMenu();
-    private PauseTransition pause = new PauseTransition(Duration.millis(200)); // debounce
 
     public static void main(String[] args) {
         launch(args);
@@ -73,79 +62,9 @@ public class MainView extends Application {
     // initialize se llama después de cargar el FXML
     @FXML
     public void initialize() {
-        // Configurar autocompletado para clientField
         if (clientField != null) {
-            clientField.textProperty().addListener((obs, oldText, newText) -> {
-                pause.stop();
-                pause.setOnFinished(ev -> showClientSuggestions(newText));
-                pause.playFromStart();
-            });
-
-            clientField.setOnKeyPressed(ev -> {
-                if (ev.getCode() == KeyCode.DOWN) {
-                    if (!clientSuggestions.isShowing() && !clientSuggestions.getItems().isEmpty()) {
-                        clientSuggestions.show(clientField, Side.BOTTOM, 0, 0);
-                    }
-                }
-            });
+            new ClientSearchBox(clientField, this::populateClientDetails);
         }
-
-        // limpiar detalles al inicio
-        clearClientDetails();
-    }
-
-    private void showClientSuggestions(String query) {
-        clientSuggestions.hide();
-        if (query == null || query.trim().isEmpty()) {
-            return;
-        }
-
-        final String currentQuery = query;
-
-        Task<List<Client>> task = new Task<>() {
-            @Override
-            protected List<Client> call() {
-                return DBConnector.instance.getClientsByNameOrDni(currentQuery);
-            }
-        };
-
-        task.setOnSucceeded(ev -> {
-            List<Client> clients = task.getValue();
-            // si la consulta cambió, ignorar estos resultados
-            if (!currentQuery.equals(clientField.getText())) {
-                return;
-            }
-            if (clients == null || clients.isEmpty()) {
-                return;
-            }
-            ContextMenu menu = new ContextMenu();
-            for (Client c : clients) {
-                Label lbl = new Label(c.fullName + "  (" + c.dni + ")");
-                CustomMenuItem item = new CustomMenuItem(lbl, true);
-                item.setOnAction(ae -> {
-                    clientField.setText(c.fullName);
-                    populateClientDetails(c);
-                    menu.hide();
-                });
-                menu.getItems().add(item);
-            }
-            // mostrar en hilo de UI
-            Platform.runLater(() -> {
-                clientSuggestions = menu;
-                if (!menu.getItems().isEmpty()) {
-                    menu.show(clientField, Side.BOTTOM, 0, 0);
-                }
-            });
-        });
-
-        task.setOnFailed(ev -> {
-            // No bloquear UI si la consulta falla; opcionalmente loguear
-            // ev.getSource().getException().printStackTrace();
-        });
-
-        Thread th = new Thread(task);
-        th.setDaemon(true);
-        th.start();
     }
 
     private void populateClientDetails(Client c) {
