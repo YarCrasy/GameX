@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.yarcrasy.gamex.controllers.CreateNewController"
+      fx:id="parentView" spacing="10">
+    <padding>
+        <Insets bottom="10" left="10" right="10" top="10"/>
+    </padding>
+    <GridPane fx:id="gamePane" hgap="10" vgap="6">
+        <columnConstraints>
+            <ColumnConstraints minWidth="100" />
+            <ColumnConstraints minWidth="200" hgrow="ALWAYS" />
+        </columnConstraints>
+        <Label text="Título:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+        <TextField fx:id="gTitleField" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+        <Label text="Plataforma:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+        <TextField fx:id="gPlatformField" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+
+        <Label text="Precio alquiler:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+        <TextField fx:id="gPriceField" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+
+        <Label text="Genero:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+        <TextField fx:id="gGenreField" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+
+        <Label text="Stock:" GridPane.rowIndex="4" GridPane.columnIndex="0" />
+        <TextField fx:id="gStockField" GridPane.rowIndex="4" GridPane.columnIndex="1" />
+    </GridPane>
+
+    <GridPane fx:id="clientPane" hgap="10" vgap="6">
+        <columnConstraints>
+            <ColumnConstraints minWidth="100" />
+            <ColumnConstraints minWidth="200" hgrow="ALWAYS" />
+        </columnConstraints>
+        <Label text="DNI:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+        <TextField fx:id="cDniField" GridPane.rowIndex="0" GridPane.columnIndex="1" />
+
+        <Label text="Nombre completo:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+        <TextField fx:id="cFullNameField" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+
+        <Label text="Email:" GridPane.rowIndex="2" GridPane.columnIndex="0" />
+        <TextField fx:id="cEmailField" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+
+        <Label text="Dirección:" GridPane.rowIndex="3" GridPane.columnIndex="0" />
+        <TextField fx:id="cAddressField" GridPane.rowIndex="3" GridPane.columnIndex="1" />
+
+    </GridPane>
+
+    <HBox alignment="CENTER_RIGHT" spacing="8">
+        <Region HBox.hgrow="ALWAYS" />
+        <Button fx:id="submitBtn" text="Crear" onAction="#onSubmit" />
+    </HBox>
+</VBox>

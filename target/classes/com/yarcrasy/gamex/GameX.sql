@@ -85,14 +85,6 @@ BEGIN
     WHERE UPPER(titulo) LIKE UPPER(CONCAT('%', gameTitle, '%'));
 END //
 
-CREATE PROCEDURE CreateRental(IN p_idCliente INT, IN p_fechaAlquiler DATE, OUT p_idAlquiler INT)
-BEGIN
-    INSERT INTO Alquiler (idCliente, fechaAlquiler)
-    VALUES (p_idCliente, p_fechaAlquiler);
-
-    SET p_idAlquiler = LAST_INSERT_ID();
-END //
-
 CREATE PROCEDURE AddRentedGame(IN p_idAlquiler INT, IN p_idJuego INT, IN p_cantidad INT, OUT p_precio DECIMAL(7,2))
 BEGIN
     DECLARE gamePrice DECIMAL(7,2);
@@ -102,16 +94,21 @@ BEGIN
     VALUES (p_idAlquiler, p_idJuego, p_cantidad, p_precio);
 END //
 
-CREATE PROCEDURE SetRentedGameDelayed(IN p_idAlquiler INT, IN p_idJuego INT)
-BEGIN
-    UPDATE Alquilado a
-    SET a.hayRetraso = TRUE, a.precio = a.precio + 2.00
-    WHERE idAlquiler = p_idAlquiler AND idJuego = p_idJuego AND a.hayRetraso = FALSE;
-END //
-
 CREATE PROCEDURE GetClientByNameOrDNI(IN searchTerm VARCHAR(100))
 BEGIN
     SELECT * FROM Cliente
     WHERE UPPER(nombreCompleto) LIKE UPPER(CONCAT('%', searchTerm, '%'))
        OR UPPER(dni) LIKE UPPER(CONCAT('%', searchTerm, '%'));
+END //
+
+CREATE PROCEDURE AddGame(IN p_titulo VARCHAR(150), IN p_plataforma VARCHAR(50), IN p_precioAlquiler DECIMAL(7,2), IN p_genero VARCHAR(50), IN p_stock INT)
+BEGIN
+    INSERT INTO Juego (titulo, plataforma, precioAlquiler, genero, stock)
+    VALUES (p_titulo, p_plataforma, p_precioAlquiler, p_genero, p_stock);
+END //
+
+CREATE PROCEDURE AddClient(IN p_dni VARCHAR(20), IN p_nombreCompleto VARCHAR(100), IN p_email VARCHAR(150), IN p_direccion VARCHAR(255))
+BEGIN
+    INSERT INTO Cliente (dni, nombreCompleto, email, direccion)
+    VALUES (p_dni, p_nombreCompleto, p_email, p_direccion);
 END //

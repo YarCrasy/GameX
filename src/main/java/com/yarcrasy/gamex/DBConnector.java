@@ -1,7 +1,6 @@
 package com.yarcrasy.gamex;
 
-import com.yarcrasy.gamex.Models.Client;
-import com.yarcrasy.gamex.Models.Game;
+import com.yarcrasy.gamex.Models.*;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -64,7 +63,6 @@ public class DBConnector {
                     continue;
                 }
                 if (trimmed.toUpperCase().startsWith("DELIMITER")) {
-                    // Cambiar delimitador (ej: DELIMITER //)
                     String[] parts = trimmed.split("\\s+", 2);
                     delimiter = parts.length > 1 ? parts[1] : ";";
                     continue;
@@ -72,7 +70,6 @@ public class DBConnector {
                 sb.append(line).append("\n");
                 String accumulated = sb.toString().trim();
                 if (accumulated.endsWith(delimiter)) {
-                    // quitar el delimitador final
                     String statement = accumulated.substring(0, accumulated.length() - delimiter.length()).trim();
                     if (!statement.isEmpty()) {
                         conn.createStatement().execute(statement);
@@ -80,16 +77,11 @@ public class DBConnector {
                     sb.setLength(0);
                 }
             }
-            // ejecutar restante si lo hay
             String leftover = sb.toString().trim();
             if (!leftover.isEmpty()) {
                 conn.createStatement().execute(leftover);
             }
         }
-    }
-
-    ResultSet exec(String sql) throws Exception {
-        return conn.createStatement().executeQuery(sql);
     }
 
     Game setupGameFromResultSet(ResultSet rs) throws SQLException {
@@ -105,7 +97,8 @@ public class DBConnector {
     public List<Game> getAllGames() {
         List<Game> games = new ArrayList<>();
         try {
-            ResultSet rs = exec("CALL GetGames();");
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM Juego;");
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 games.add(setupGameFromResultSet(rs));
             }
@@ -119,7 +112,9 @@ public class DBConnector {
     public List<Game> getGamesByTitle(String title) {
         List<Game> games = new ArrayList<>();
         try {
-            ResultSet rs = exec("CALL GetGamesByTitle('" + title + "');");
+            PreparedStatement ps = conn.prepareStatement("CALL GetGamesByTitle(?);");
+            ps.setString(1, title);
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 games.add(setupGameFromResultSet(rs));
             }
@@ -138,14 +133,31 @@ public class DBConnector {
                 rs.getString("email"),
                 rs.getString("direccion"),
                 rs.getBoolean("esFrecuente")
-
         );
     }
 
-    public List<Client> getClientsByName(String name) {
+    public List<Client> getClientsByNameOrDni(String data) {
+        List<Client> clients = new ArrayList<>();
+        if (data == null) return clients;
+        try {
+            PreparedStatement ps = conn.prepareStatement("CALL GetClientByNameOrDNI(?)");
+            ps.setString(1, data);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                clients.add(setupClientFromResultSet(rs));
+            }
+            return clients;
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+        return clients;
+    }
+
+    public List<Client> getAllClients() {
         List<Client> clients = new ArrayList<>();
         try {
-            ResultSet rs = exec("CALL GetClientsByName('" + name + "');");
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM Cliente;");
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 clients.add(setupClientFromResultSet(rs));
             }
@@ -156,28 +168,39 @@ public class DBConnector {
         return clients;
     }
 
-    public List<Client> getClientsByNameOrDni(String term) {
-        List<Client> clients = new ArrayList<>();
-        if (term == null) return clients;
-        try (PreparedStatement ps = conn.prepareStatement("CALL GetClientByNameOrDNI(?)")) {
-            ps.setString(1, term);
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    clients.add(setupClientFromResultSet(rs));
-                }
-            }
-            return clients;
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-        return clients;
+    public List<Rental> getAllRentals() {
+        List<Rental> rentals = new ArrayList<>();
+        return rentals;
     }
 
-    public void setRentedGameDelayed(int rentalId, int rentedGameId) {
-        try {
-            exec("CALL SetRentedGameDelayed(" + rentalId + ", " + rentedGameId + ");");
+    public boolean addGame(String title, String platform, double price, String genre, int stock) {
+        try (PreparedStatement ps = conn.prepareStatement(
+                "CALL AddGame(?, ?, ?, ?, ?)")) {
+            ps.setString(1, title);
+            ps.setString(2, platform);
+            ps.setDouble(3, price);
+            ps.setString(4, genre);
+            ps.setInt(5, stock);
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            return ps.executeUpdate() > 0;
         } catch (Exception e) {
             System.out.println(e);
         }
+        return false;
+    }
+
+    public boolean addClient(String dni, String fullName, String email, String address) {
+        try (PreparedStatement ps = conn.prepareStatement(
+                "CALL AddClient(?, ?, ?, ?)")) {
+            ps.setString(1, dni);
+            ps.setString(2, fullName);
+            ps.setString(3, email);
+            ps.setString(4, address);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+        return false;
     }
 }

@@ -102,7 +102,7 @@ public class MainView extends Application {
                 gcc.setGameCard(g);
                 content.getChildren().add(gameCard);
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println("Error al cargar la tarjeta de juego: " + e.getMessage());
             }
         }
         gameList.setContent(content);
@@ -113,10 +113,65 @@ public class MainView extends Application {
         updateGameList(gl);
     }
 
-    @FXML
     public void onGameSearchBtnClick(ActionEvent e) {
         List<Game> gl = DBConnector.instance.getGamesByTitle(titleField.getText());
         updateGameList(gl);
+    }
+
+    public void onNewGameMenu(ActionEvent e) {
+        openCreateNewWindow(ViewType.GAME);
+    }
+
+    public void onNewClientMenu(ActionEvent e) {
+        openCreateNewWindow(ViewType.CLIENT);
+    }
+
+    public void onListGamesMenu(ActionEvent e) {
+        openDisplayListWindow(ViewType.GAME);
+    }
+
+    public void onListClientsMenu(ActionEvent e) {
+        openDisplayListWindow(ViewType.CLIENT);
+    }
+
+    public void onRentalsHistoryMenu(ActionEvent e) {
+        openDisplayListWindow(ViewType.RENTAL);
+    }
+
+    private void openCreateNewWindow(ViewType type) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("CreateNew.fxml"));
+            Parent root = loader.load();
+            com.yarcrasy.gamex.controllers.CreateNewController ctrl = loader.getController();
+            ctrl.setType(type);
+
+            Stage stage = new Stage();
+            stage.setTitle(type == ViewType.GAME ? "Crear nuevo juego" : "Crear nuevo cliente");
+            stage.setScene(new Scene(root));
+            stage.initOwner(titleField.getScene().getWindow());
+            stage.show();
+        } catch (IOException ex) {
+            System.err.println("Error al abrir la ventana de creación: " + ex.getMessage());
+        }
+    }
+
+    private void openDisplayListWindow(ViewType type) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("DisplayList.fxml"));
+            Parent root = loader.load();
+            com.yarcrasy.gamex.controllers.DisplayListController ctrl = loader.getController();
+            ctrl.setType(type);
+
+            Stage stage = new Stage();
+            stage.setTitle(type == ViewType.GAME ? "Lista de juegos" :
+                    type == ViewType.CLIENT ? "Lista de clientes" :
+                            "Historial de alquileres");
+            stage.setScene(new Scene(root));
+            stage.initOwner(titleField.getScene().getWindow());
+            stage.show();
+        } catch (IOException ex) {
+            System.err.println("Error al abrir la ventana de lista: " + ex.getMessage());
+        }
     }
 
     public void addGameToCart(Game g) {
@@ -145,7 +200,7 @@ public class MainView extends Application {
             ccc.setCartCard(g);
             content.getChildren().add(gameCard);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error al añadir juego al carrito: " + e.getMessage());
         }
     }
 

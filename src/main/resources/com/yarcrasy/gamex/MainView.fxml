@@ -11,15 +11,15 @@
 
     <MenuBar>
         <Menu mnemonicParsing="false" text="Juegos">
-            <MenuItem mnemonicParsing="false" text="Nuevo"/>
-            <MenuItem mnemonicParsing="false" text="Listar"/>
+            <MenuItem mnemonicParsing="false" text="Nuevo" onAction="#onNewGameMenu" />
+            <MenuItem mnemonicParsing="false" text="Listar" onAction="#onListGamesMenu" />
         </Menu>
         <Menu mnemonicParsing="false" text="Clientes">
-            <MenuItem mnemonicParsing="false" text="Nuevo"/>
-            <MenuItem mnemonicParsing="false" text="Listar"/>
+            <MenuItem mnemonicParsing="false" text="Nuevo" onAction="#onNewClientMenu" />
+            <MenuItem mnemonicParsing="false" text="Listar" onAction="#onListClientsMenu" />
         </Menu>
         <Menu mnemonicParsing="false" text="Alquileres">
-            <MenuItem mnemonicParsing="false" text="Historial"/>
+            <MenuItem mnemonicParsing="false" text="Historial" onAction="#onRentalsHistoryMenu" />
         </Menu>
     </MenuBar>
     <SplitPane dividerPositions="0.2" maxHeight="Infinity" maxWidth="Infinity" prefHeight="1920" prefWidth="Infinity">
