@@ -77,10 +77,6 @@ INSERT INTO Alquilado (idAlquiler, idJuego, cantidad, precio) VALUES
 (3, 4, 1, 3.99);
 
 DELIMITER //
-CREATE PROCEDURE GetGames()
-BEGIN
-    SELECT * FROM Juego;
-END //
 
 CREATE PROCEDURE GetGamesByTitle(IN gameTitle VARCHAR(150))
 BEGIN

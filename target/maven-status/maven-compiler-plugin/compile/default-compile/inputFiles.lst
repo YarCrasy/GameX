@@ -1,4 +1,13 @@
-C:\Users\lingc\Documents\JavaProjects\GameX\src\main\java\com\yarcrasy\gamex\HelloApplication.java
-C:\Users\lingc\Documents\JavaProjects\GameX\src\main\java\com\yarcrasy\gamex\HelloController.java
+C:\Users\lingc\Documents\JavaProjects\GameX\src\main\java\com\yarcrasy\gamex\controllers\CartCardController.java
+C:\Users\lingc\Documents\JavaProjects\GameX\src\main\java\com\yarcrasy\gamex\controllers\ClientSearchBox.java
+C:\Users\lingc\Documents\JavaProjects\GameX\src\main\java\com\yarcrasy\gamex\controllers\CreateNewController.java
+C:\Users\lingc\Documents\JavaProjects\GameX\src\main\java\com\yarcrasy\gamex\controllers\DisplayListController.java
+C:\Users\lingc\Documents\JavaProjects\GameX\src\main\java\com\yarcrasy\gamex\controllers\GameCardController.java
+C:\Users\lingc\Documents\JavaProjects\GameX\src\main\java\com\yarcrasy\gamex\controllers\ViewType.java
+C:\Users\lingc\Documents\JavaProjects\GameX\src\main\java\com\yarcrasy\gamex\DBConnector.java
 C:\Users\lingc\Documents\JavaProjects\GameX\src\main\java\com\yarcrasy\gamex\Launcher.java
+C:\Users\lingc\Documents\JavaProjects\GameX\src\main\java\com\yarcrasy\gamex\MainView.java
+C:\Users\lingc\Documents\JavaProjects\GameX\src\main\java\com\yarcrasy\gamex\Models\Client.java
+C:\Users\lingc\Documents\JavaProjects\GameX\src\main\java\com\yarcrasy\gamex\Models\Game.java
+C:\Users\lingc\Documents\JavaProjects\GameX\src\main\java\com\yarcrasy\gamex\Models\Rental.java
 C:\Users\lingc\Documents\JavaProjects\GameX\src\main\java\module-info.java
