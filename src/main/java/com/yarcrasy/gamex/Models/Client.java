@@ -16,4 +16,12 @@ public class Client {
         this.address = address;
         this.isFrequent = isFrequent;
     }
+
+    // Getters para PropertyValueFactory
+    public String getId() { return id; }
+    public String getDni() { return dni; }
+    public String getFullName() { return fullName; }
+    public String getEmail() { return email; }
+    public String getAddress() { return address; }
+    public boolean isIsFrequent() { return isFrequent; }
 }

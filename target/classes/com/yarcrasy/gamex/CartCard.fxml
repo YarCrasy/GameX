@@ -13,6 +13,6 @@
     <Region HBox.hgrow="ALWAYS" minWidth="0.0"/>
     <Label text="Cantidad" fx:id="amount"/>
     <Region HBox.hgrow="ALWAYS" maxWidth="10.0"/>
-    <Button mnemonicParsing="false" text="-"/>
+    <Button mnemonicParsing="false" text="-" onAction="#decrementQuantity"/>
 
 </HBox>

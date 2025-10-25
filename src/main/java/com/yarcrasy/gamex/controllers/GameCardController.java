@@ -3,6 +3,7 @@ package com.yarcrasy.gamex.controllers;
 import com.yarcrasy.gamex.MainView;
 import com.yarcrasy.gamex.Models.Game;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 
 public class GameCardController {
@@ -28,9 +29,17 @@ public class GameCardController {
 
     @FXML
     public void onAddButtonClicked() {
-        System.out.println("Add button clicked for game: " + title.getText());
+        if (game.stock <= 0) {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Sin stock");
+            alert.setHeaderText(null);
+            alert.setContentText("No hay stock disponible para este juego.");
+            alert.show();
+            return;
+        }
+        game.stock -= 1;
+        stock.setText("stock: " + game.stock);
         mainView.addGameToCart(game);
-
     }
 
 }

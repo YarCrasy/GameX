@@ -1,33 +1,37 @@
 package com.yarcrasy.gamex.Models;
 
-import com.yarcrasy.gamex.DBConnector;
+import java.util.ArrayList;
+import java.time.LocalDate;
+import java.util.List;
 
 public class Rental {
-    public String id;
-    public Client client;
-    public String rentalDate;
-    public boolean isDelayed = false;
-    public float totalAmount = 0.0f;
+    public int id;
+    public int clientId;
+    public LocalDate rentalDate;
+    public float delayFee = 0;
+    public List<Game> games = new ArrayList<>();
 
-    public Rental(String id, Client client, String rentalDate) {
+    public Rental(int id, int clientId, LocalDate rentalDate) {
         this.id = id;
-        this.client = client;
         this.rentalDate = rentalDate;
+        this.clientId = clientId;
     }
 
-    public Rental(String id, Client client, String rentalDate, boolean isDelayed, float totalAmount) {
-        this.id = id;
-        this.client = client;
-        this.rentalDate = rentalDate;
-        this.isDelayed = isDelayed;
-        this.totalAmount = totalAmount;
+    public Rental(int clientId, List<Game> games) {
+        this.clientId = clientId;
+        this.games = games;
     }
 
-    public void setDelayed() {
-        isDelayed = true;
+    public void setDelayFee(float delayFee) {
+        this.delayFee = delayFee;
     }
 
-    public void setTotalAmount(float totalAmount) {
-        this.totalAmount = totalAmount;
+    public void addGame(Game game) {
+        this.games.add(game);
     }
+
+    // Getters para PropertyValueFactory
+    public int getId() { return id; }
+    public int getClientId() { return clientId; }
+    public LocalDate getRentalDate() { return rentalDate; }
 }

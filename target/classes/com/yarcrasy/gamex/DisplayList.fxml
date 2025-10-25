@@ -8,6 +8,5 @@
     <prefHeight>
         600.0
     </prefHeight>
-    <Label fx:id="titleLabel" text="Listado" />
     <TableView fx:id="tableView" prefHeight="400" />
 </VBox>

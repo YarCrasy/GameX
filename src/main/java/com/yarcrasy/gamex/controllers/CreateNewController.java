@@ -1,6 +1,7 @@
 package com.yarcrasy.gamex.controllers;
 
 import com.yarcrasy.gamex.DBConnector;
+import com.yarcrasy.gamex.MainView;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -59,16 +60,15 @@ public class CreateNewController {
         else {
             String title = gTitleField.getText();
             String platform = gPlatformField.getText();
-            double price = 0.0;
-            try { price = Double.parseDouble(gPriceField.getText()); } catch (Exception ex) { }
+            float price =  Float.parseFloat(gPriceField.getText());
             String genre = gGenreField.getText();
-            int stock = 0;
-            try { stock = Integer.parseInt(gStockField.getText()); } catch (Exception ex) { }
+            int stock = Integer.parseInt(gStockField.getText());
             if (title == null || title.trim().isEmpty() || platform == null || platform.trim().isEmpty()) {
                 showAlert(Alert.AlertType.WARNING, "Campos obligatorios", "Título y Plataforma son obligatorios");
                 return;
             }
-            ok = DBConnector.instance.addGame(title.trim(), platform.trim(), price, genre == null ? "" : genre.trim(), stock);
+            ok = DBConnector.instance.addGame(title, platform, price, genre, stock);
+            MainView.instance.loadGames();
         }
 
         if (ok) {

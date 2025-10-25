@@ -56,6 +56,9 @@ INSERT INTO Cliente (dni, nombreCompleto) VALUES
 ('11223344C', 'Cliente2 Apellido1'),
 ('44332211D', 'Cliente3 Apellido2');
 
+INSERT INTO Cliente (dni, nombreCompleto, esFrecuente) VALUES
+('55555555E', 'Cliente4 Apellido4', true);
+
 INSERT INTO Juego (titulo, plataforma, precioAlquiler, genero, stock) VALUES
 ('Juego1', 'Nintendo Switch', 5.99, 'Action-Adventure', 10),
 ('Juego2', 'PlayStation 5', 6.99, 'RPG', 8),
@@ -85,15 +88,6 @@ BEGIN
     WHERE UPPER(titulo) LIKE UPPER(CONCAT('%', gameTitle, '%'));
 END //
 
-CREATE PROCEDURE AddRentedGame(IN p_idAlquiler INT, IN p_idJuego INT, IN p_cantidad INT, OUT p_precio DECIMAL(7,2))
-BEGIN
-    DECLARE gamePrice DECIMAL(7,2);
-    SELECT precioAlquiler INTO gamePrice FROM Juego WHERE idJuego = p_idJuego;
-    SET p_precio = gamePrice * p_cantidad;
-    INSERT INTO Alquilado (idAlquiler, idJuego, cantidad, precio)
-    VALUES (p_idAlquiler, p_idJuego, p_cantidad, p_precio);
-END //
-
 CREATE PROCEDURE GetClientByNameOrDNI(IN searchTerm VARCHAR(100))
 BEGIN
     SELECT * FROM Cliente
@@ -112,3 +106,27 @@ BEGIN
     INSERT INTO Cliente (dni, nombreCompleto, email, direccion)
     VALUES (p_dni, p_nombreCompleto, p_email, p_direccion);
 END //
+
+CREATE PROCEDURE AddRental(IN p_idCliente INT, OUT p_idAlquiler INT)
+BEGIN
+    DECLARE v_fechaAlquiler DATE;
+    SET v_fechaAlquiler = CURDATE();
+    INSERT INTO Alquiler (idCliente, fechaAlquiler)
+    VALUES (p_idCliente, v_fechaAlquiler);
+    SET p_idAlquiler = LAST_INSERT_ID();
+END //
+
+CREATE PROCEDURE AddGameToRental(IN p_idAlquiler INT, IN p_idJuego INT, IN p_cantidad INT)
+BEGIN
+    DECLARE gamePrice DECIMAL(7,2);
+    SELECT precioAlquiler INTO gamePrice FROM Juego WHERE idJuego = p_idJuego;
+    INSERT INTO Alquilado (idAlquiler, idJuego, cantidad, precio)
+    VALUES (p_idAlquiler, p_idJuego, p_cantidad, gamePrice * p_cantidad);
+
+    UPDATE Juego
+    SET stock = stock - p_cantidad
+    WHERE idJuego = p_idJuego;
+
+END //
+
+DELIMITER ;

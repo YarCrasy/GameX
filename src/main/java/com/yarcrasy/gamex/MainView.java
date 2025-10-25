@@ -9,42 +9,31 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 
 public class MainView extends Application {
 
-    @FXML
-    private ScrollPane gameList;
-    @FXML
-    private TextField titleField;
-    @FXML
+    public static MainView instance;
+
+    public GridPane clientInfoPane;
+    public ScrollPane gameList;
+    public TextField titleField;
     public ScrollPane addedGameList;
 
-    // Campos para búsqueda/autocompletado de clientes y detalle
-    @FXML
-    private TextField clientField;
-    @FXML
-    private Label clientIdLabel;
-    @FXML
-    private Label clientNameLabel;
-    @FXML
-    private Label clientAddressLabel;
-    @FXML
-    private Label clientDniLabel;
-    @FXML
-    private Label clientEmailLabel;
-    @FXML
-    private CheckBox clientFrequentCheckBox;
-
-    public static void main(String[] args) {
-        launch(args);
-    }
+    public TextField clientField;
+    public Label clientIdLabel;
+    public Label clientNameLabel;
+    public Label clientAddressLabel;
+    public Label clientDniLabel;
+    public Label clientEmailLabel;
+    public CheckBox clientFrequentCheckBox;
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -55,11 +44,10 @@ public class MainView extends Application {
         stage.setMaximized(true);
         stage.setScene(scene);
         stage.show();
-        MainView controller = fxmlLoader.getController();
-        controller.loadGames();
+        instance = fxmlLoader.getController();
+        instance.loadGames();
     }
 
-    // initialize se llama después de cargar el FXML
     @FXML
     public void initialize() {
         if (clientField != null) {
@@ -81,11 +69,11 @@ public class MainView extends Application {
     }
 
     private void clearClientDetails() {
-        if (clientIdLabel != null) clientIdLabel.setText("");
-        if (clientNameLabel != null) clientNameLabel.setText("");
-        if (clientAddressLabel != null) clientAddressLabel.setText("");
-        if (clientDniLabel != null) clientDniLabel.setText("");
-        if (clientEmailLabel != null) clientEmailLabel.setText("");
+        if (clientIdLabel != null) clientIdLabel.setText("ID: ");
+        if (clientNameLabel != null) clientNameLabel.setText("Nombre: ");
+        if (clientAddressLabel != null) clientAddressLabel.setText("Dirección: ");
+        if (clientDniLabel != null) clientDniLabel.setText("DNI: ");
+        if (clientEmailLabel != null) clientEmailLabel.setText("Email: ");
         if (clientFrequentCheckBox != null) clientFrequentCheckBox.setSelected(false);
     }
 
@@ -113,28 +101,28 @@ public class MainView extends Application {
         updateGameList(gl);
     }
 
-    public void onGameSearchBtnClick(ActionEvent e) {
+    public void onGameSearchBtnClick(ActionEvent ignoredE) {
         List<Game> gl = DBConnector.instance.getGamesByTitle(titleField.getText());
         updateGameList(gl);
     }
 
-    public void onNewGameMenu(ActionEvent e) {
+    public void onNewGameMenu(ActionEvent ignoredE) {
         openCreateNewWindow(ViewType.GAME);
     }
 
-    public void onNewClientMenu(ActionEvent e) {
+    public void onNewClientMenu(ActionEvent ignoredE) {
         openCreateNewWindow(ViewType.CLIENT);
     }
 
-    public void onListGamesMenu(ActionEvent e) {
+    public void onListGamesMenu(ActionEvent ignoredE) {
         openDisplayListWindow(ViewType.GAME);
     }
 
-    public void onListClientsMenu(ActionEvent e) {
+    public void onListClientsMenu(ActionEvent ignoredE) {
         openDisplayListWindow(ViewType.CLIENT);
     }
 
-    public void onRentalsHistoryMenu(ActionEvent e) {
+    public void onRentalsHistoryMenu(ActionEvent ignoredE) {
         openDisplayListWindow(ViewType.RENTAL);
     }
 
@@ -159,7 +147,7 @@ public class MainView extends Application {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("DisplayList.fxml"));
             Parent root = loader.load();
-            com.yarcrasy.gamex.controllers.DisplayListController ctrl = loader.getController();
+            DisplayListController ctrl = loader.getController();
             ctrl.setType(type);
 
             Stage stage = new Stage();
@@ -178,30 +166,109 @@ public class MainView extends Application {
         VBox content;
         Node existing = addedGameList.getContent();
 
-        if (existing == null) {
-            content = new VBox();
-        } else if (existing instanceof HBox) {
+        if (existing instanceof VBox) {
             content = (VBox) existing;
-        } else if (existing instanceof javafx.scene.layout.Pane) {
-            javafx.scene.layout.Pane pane = (javafx.scene.layout.Pane) existing;
+        } else if (existing instanceof Pane pane) {
             content = new VBox();
             content.getChildren().addAll(pane.getChildren());
         } else {
             content = new VBox();
         }
 
+        for (Node child : content.getChildren()) {
+            Object ud = child.getUserData();
+            if (ud instanceof CartCardController existingCtrl) {
+                Game existingGame = existingCtrl.game;
+                if (existingGame != null && Objects.equals(existingGame.id, g.id)) {
+                    existingCtrl.incrementQuantity();
+                    addedGameList.setContent(content);
+                    return;
+                }
+            }
+        }
+
         addedGameList.setContent(content);
         content.setSpacing(1);
-        CartCardController ccc = new CartCardController(this, g);
+        CartCardController ccc = new CartCardController(g);
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("CartCard.fxml"));
             fxmlLoader.setController(ccc);
             Node gameCard = fxmlLoader.load();
             ccc.setCartCard(g);
+            gameCard.setUserData(ccc);
             content.getChildren().add(gameCard);
         } catch (IOException e) {
             System.err.println("Error al añadir juego al carrito: " + e.getMessage());
         }
     }
+
+    public void rstDataBase() {
+        DBConnector.instance.rstDataBase();
+        loadGames();
+        clearCart();
+    }
+
+    public void clearCart() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Confirmación");
+        alert.setHeaderText(null);
+        alert.setContentText("¿Estás seguro de que deseas vaciar el carrito?\nEsta acción no se puede deshacer.");
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                clearClientDetails();
+                addedGameList.setContent(new VBox());
+                loadGames();
+            }
+        });
+    }
+
+    public void processRental() {
+        String dniText = clientIdLabel.getText().replace("ID: ", "");
+        System.out.println("dniText: -" + dniText + "-");
+        if (dniText.isEmpty()) {
+            rentalFailureAlert("Debe seleccionar un cliente para procesar el alquiler.");
+            return;
+        }
+        List<Game> games = new ArrayList<>();
+        VBox content = (VBox) addedGameList.getContent();
+        if (content != null){
+            for(int i=0; i< content.getChildren().size(); i++) {
+                Node child = content.getChildren().get(i);
+                Object ud = child.getUserData();
+                if (ud instanceof CartCardController existingCtrl && existingCtrl.quantity > 0) {
+                    Game existingGame = existingCtrl.game;
+                    games.add(new Game(existingGame.id, null, null, null, existingCtrl.quantity));
+                }
+            }
+        }
+        try {
+            int clientId = Integer.parseInt(dniText);
+            boolean ok = DBConnector.instance.processRental(new Rental(clientId, games));
+            if (!ok) rentalFailureAlert("Hubo un error al procesar el alquiler. Por favor, inténtelo de nuevo.");
+            else{
+                rentalSuccessAlert();
+                clearClientDetails();
+                addedGameList.setContent(new VBox());
+            }
+        } catch (NumberFormatException _) {}
+    }
+
+    void rentalFailureAlert(String msg) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Error en el alquiler");
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+        alert.show();
+    }
+
+    void rentalSuccessAlert() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Alquiler procesado");
+        alert.setHeaderText(null);
+        alert.setContentText("El alquiler se ha procesado correctamente.");
+        alert.show();
+    }
+
+
 
 }
