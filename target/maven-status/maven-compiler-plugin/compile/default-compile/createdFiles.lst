@@ -1,2 +1,14 @@
+com\yarcrasy\gamex\MainView.class
+com\yarcrasy\gamex\controllers\CreateNewController.class
+com\yarcrasy\gamex\controllers\GameCardController.class
+com\yarcrasy\gamex\controllers\DisplayListController.class
 com\yarcrasy\gamex\Launcher.class
+com\yarcrasy\gamex\controllers\CartCardController.class
+com\yarcrasy\gamex\controllers\ClientSearchBox.class
+com\yarcrasy\gamex\controllers\ClientSearchBox$1.class
+com\yarcrasy\gamex\Models\Game.class
+com\yarcrasy\gamex\controllers\ViewType.class
+com\yarcrasy\gamex\DBConnector.class
+com\yarcrasy\gamex\Models\Rental.class
 module-info.class
+com\yarcrasy\gamex\Models\Client.class

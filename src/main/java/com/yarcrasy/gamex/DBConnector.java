@@ -12,7 +12,7 @@ public class DBConnector {
 
     final String database = "GameX";
     final String urlBase = "jdbc:mysql://" + "localhost" + ":" + 3306 + "/";
-    final String user = "root";
+    final String user = "GameX";
     final String password = "!StrongPassword123";
 
     Connection conn;

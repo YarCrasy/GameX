@@ -26,7 +26,7 @@ CREATE TABLE Alquiler (
     multaRetraso DECIMAL(7,2) DEFAULT 0.00,
     CONSTRAINT PK_Alquiler PRIMARY KEY (idAlquiler),
     CONSTRAINT FK_Alquiler_Cliente FOREIGN KEY (idCliente)
-    REFERENCES Cliente (idCliente) ON UPDATE CASCADE ON DELETE RESTRICT
+    REFERENCES Cliente (idCliente)
 );
 
 CREATE TABLE Alquilado (
@@ -44,9 +44,7 @@ CREATE TABLE Alquilado (
         ON UPDATE CASCADE
         ON DELETE CASCADE,
     CONSTRAINT FK_Alquilado_Juego FOREIGN KEY (idJuego)
-        REFERENCES Juego (idJuego)
-        ON UPDATE CASCADE
-        ON DELETE RESTRICT,
+        REFERENCES Juego (idJuego),
     CONSTRAINT UQ_Alquilado_Alquiler_Juego UNIQUE (idAlquiler, idJuego)
 );
 
