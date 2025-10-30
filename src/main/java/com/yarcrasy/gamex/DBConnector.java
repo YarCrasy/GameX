@@ -108,6 +108,28 @@ public class DBConnector {
         );
     }
 
+    Client setupClientFromResultSet(ResultSet rs) throws SQLException {
+        return new Client(
+                rs.getString("idCliente"),
+                rs.getString("dni"),
+                rs.getString("nombreCompleto"),
+                rs.getString("email"),
+                rs.getString("direccion"),
+                rs.getBoolean("esFrecuente")
+        );
+    }
+
+    Rental setupRentalFromResultSet(ResultSet rs) throws SQLException {
+        Rental r = new Rental(
+                rs.getInt("idAlquiler"),
+                rs.getInt("idCliente"),
+                rs.getDate("fechaAlquiler").toLocalDate()
+        );
+        r.setDelayFee(rs.getFloat("multaRetraso"));
+        return r;
+    }
+
+
     public List<Game> getAllGames() {
         List<Game> games = new ArrayList<>();
         try {
@@ -137,17 +159,6 @@ public class DBConnector {
             System.err.println(e.getMessage());
         }
         return games;
-    }
-
-    Client setupClientFromResultSet(ResultSet rs) throws SQLException {
-        return new Client(
-                rs.getString("idCliente"),
-                rs.getString("dni"),
-                rs.getString("nombreCompleto"),
-                rs.getString("email"),
-                rs.getString("direccion"),
-                rs.getBoolean("esFrecuente")
-        );
     }
 
     public List<Client> getClientsByNameOrDni(String data) {
@@ -180,16 +191,6 @@ public class DBConnector {
             System.err.println(e.getMessage());
         }
         return clients;
-    }
-
-    Rental setupRentalFromResultSet(ResultSet rs) throws SQLException {
-        Rental r = new Rental(
-                rs.getInt("idAlquiler"),
-                rs.getInt("idCliente"),
-                rs.getDate("fechaAlquiler").toLocalDate()
-        );
-        r.setDelayFee(rs.getFloat("multaRetraso"));
-        return r;
     }
 
     public List<Rental> getAllRentals() {
